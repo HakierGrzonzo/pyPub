@@ -10,6 +10,17 @@
     </head>
     <body onscroll="scrollHandle">
       <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+        
+            var url = 'http://127.0.0.1:5001/GUI-is-still-open'; 
+            fetch(url, { mode: 'no-cors'});
+            setInterval(function(){ fetch(url, { mode: 'no-cors'});}, 5000)();
+        
+        });
+        
+      </script>
+      <script>
           function includeHTML() {
             var z, i, elmnt, file, xhttp;
             /* Loop through a collection of all HTML elements: */
@@ -39,6 +50,12 @@
                           console.log(element);
                           element.scrollIntoView();
                         }
+                        /*{% if progress %}*/
+                        var progress = {{ progress }};
+                        var pos = progress * $(document).height() / 1000;
+                        pos = Math.trunc(pos);
+                        window.scrollTo(0, pos);
+                        /*{% endif %}*/
                       }, 2000)
                     }
                     if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
@@ -97,9 +114,17 @@
           var scroll = getScrollPercent() * 1000;
           if (Math.abs(scroll - oldScrollpos) > 1) {
             oldScrollpos = Math.trunc(scroll);
-            console.log(oldScrollpos);
-          }
-
+            fetch('/api/pushProgress/'+ oldScrollpos)
+            .then(function (response) {
+              return response.json();
+            })
+            .then(function (myJson) {
+              console.log(myJson.pos);
+            })
+            .catch(function (error) {
+              console.log("Error: " + error);
+            });
+            }
         }
       </script>
     </body>

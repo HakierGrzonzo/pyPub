@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, abort, send_from_directory, make_response
+from flask import render_template, request, abort, send_from_directory, make_response, jsonify
 import argparse, os, json
 from .book import Book
 
@@ -27,10 +27,16 @@ except FileNotFoundError as e:
         }
     }
 book = Book(args.file)
+currentChapterNum = config['books'].get(book.get_title(), dict()).get('chapter', 0)
+
+@app.route('/')
+def entrypoint():
+    return index(currentChapterNum, startOnProgress = True)
 
 
 @app.route('/<int:num>')
-def index(num, link = None):
+def index(num, link = None, startOnProgress = False):
+    global currentChapterNum
     url = book.id_to_href[book.content_spine_ids[num]]
     if book.is_valid_chapter(num - 1):
         prev = num - 1
@@ -40,7 +46,24 @@ def index(num, link = None):
         next_ = num + 1
     else:
         next_ = None
-    return render_template('index.html', contentUrl = url, prev = prev, next = next_, num = num, total = len(book.content_spine_ids), link = link)
+    currentChapterNum = num
+    try:
+        config['books'][book.get_title()]['chapter'] = currentChapterNum
+    except KeyError:
+        config['books'][book.get_title()] = dict()
+        config['books'][book.get_title()]['chapter'] = currentChapterNum
+    if startOnProgress:
+        progress = config['books'].get(book.get_title(), dict()).get('progress', 0)
+    else:
+        progress = 0
+    return render_template('index.html', contentUrl = url, prev = prev, next = next_, num = num, total = len(book.content_spine_ids), link = link, progress = progress)
+
+@app.route('/api/pushProgress/<int:progress>')
+def saveProgress(progress):
+    config['books'][book.get_title()]['progress'] = progress
+    with open(args.config, 'w+') as f:
+        f.write(json.dumps(config))
+    return jsonify({'pos': progress})
 
 @app.route('/<path:path>')
 def item(path):

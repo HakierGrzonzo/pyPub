@@ -23,3 +23,5 @@ class Book():
     def get_href(self, href):
         item = self.book.get_item_with_href(href)
         return item
+    def get_title(self):
+        return self.book.get_metadata('DC', 'title')[0][0]

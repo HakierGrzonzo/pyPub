@@ -1,6 +1,4 @@
 import json
-from app import app, args, config
+from app import ui, args, config
 
-app.run()
-with open(args.config, 'w+') as f:
-    f.write(json.dumps(config))
+ui.run()
