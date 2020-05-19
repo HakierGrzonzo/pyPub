@@ -5,12 +5,13 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='materialize.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='icons.css') }}">
         <script src="{{ url_for('static', filename='materialize.js') }}"></script>
+        <script src="{{ url_for('static', filename='shortcuts.js') }}"></script>
         <script src="{{ url_for('static', filename='jquery.js') }}"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body onscroll="scrollHandle">
+    <body onscroll="scrollHandle" class="orange lighten-3">
       <script>
-
+        /* For app to close properly */
         document.addEventListener('DOMContentLoaded', function() {
         
             var url = 'http://127.0.0.1:5001/GUI-is-still-open'; 
@@ -21,6 +22,7 @@
         
       </script>
       <script>
+        /* Load and process content */
           function includeHTML() {
             var z, i, elmnt, file, xhttp;
             /* Loop through a collection of all HTML elements: */
@@ -55,6 +57,8 @@
                         var pos = progress * $(document).height() / 1000;
                         pos = Math.trunc(pos);
                         window.scrollTo(0, pos);
+                        /*{% else %} */
+                        scrollHandle();
                         /*{% endif %}*/
                       }, 2000)
                     }
@@ -72,37 +76,8 @@
             }
           }
       </script> 
-      <div class="container">
-        <div class="row">
-          <div class="s12 m11" style="max-width: 19cm;">
-            <h5>{{ num + 1 }}/{{ total }}</h5>
-            <div class="divider"></div>
-            <div class="section" w3-include-html="{{ contentUrl }}?raw_html=yes" id="embeded" ></div>
-            <script>
-                includeHTML();
-            </script>
-            <div class="fixed-action-btn">
-                {% if link %}
-                <a class="btn-floating teal" onclick="history.go(-1)">
-                  <i class="material-icons">arrow_back</i>
-                </a>
-                {% endif %}
-                {% if prev + 1 %}
-                <a class="btn-floating green" href="/{{prev}}">
-                    <i class="material-icons">navigate_before</i>
-                </a>
-                {% endif %}
-                {% if next %}
-                <a class="btn-floating btn-large red" href="/{{next}}">
-                    <i class="large material-icons">navigate_next</i>
-                </a>
-                {% endif %}
-            </div>
-          </div>
-        </div>
-        <div style="margin-top: 5cm;"></div>
-      </div>
       <script>
+        /* save progress */
         function getScrollPercent() {
           var pos = $(window).scrollTop();
           var max = $(document).height();
@@ -127,5 +102,45 @@
             }
         }
       </script>
+      <div class="container">
+        <div class="row">
+          <div class="s12 m11 card-panel orange lighten-4" style="max-width: 19cm;">
+            <h5>{{ num + 1 }}/{{ total }}</h5>
+            <div class="divider"></div>
+            <div class="section" w3-include-html="{{ contentUrl }}?raw_html=yes" id="embeded" ></div>
+            <script>
+                includeHTML();
+            </script>
+            <div class="fixed-action-btn">
+                {% if link %}
+                <a class="btn-floating teal" onclick="history.go(-1)">
+                  <i class="material-icons">arrow_back</i>
+                </a>
+                {% endif %}
+                {% if prev + 1 %}
+                <a class="btn-floating green" href="/{{prev}}">
+                    <i class="material-icons">navigate_before</i>
+                </a>
+                <script>
+                  shortcut.add('h', function() {
+                    window.location.href = "/{{prev}}";   
+                  });
+                </script>
+                {% endif %}
+                {% if next %}
+                <a class="btn-floating btn-large red" href="/{{next}}">
+                    <i class="large material-icons">navigate_next</i>
+                </a>
+                <script>
+                  shortcut.add('l', function() {
+                    window.location.href = "/{{next}}";   
+                  });
+                </script>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 5cm;"></div>
+      </div>
     </body>
 </html>
