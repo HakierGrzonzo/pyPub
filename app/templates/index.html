@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>pyPub</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='materialize.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='icons.css') }}">
+        <script src="{{ url_for('static', filename='materialize.js') }}"></script>
+        <script src="{{ url_for('static', filename='jquery.js') }}"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body onscroll="scrollHandle">
+      <script>
+          function includeHTML() {
+            var z, i, elmnt, file, xhttp;
+            /* Loop through a collection of all HTML elements: */
+            z = document.getElementsByTagName("*");
+            for (i = 0; i < z.length; i++) {
+              elmnt = z[i];
+              /*search for elements with a certain atrribute:*/
+              file = elmnt.getAttribute("w3-include-html");
+              if (file) {
+                /* Make an HTTP request using the attribute value as the file name: */
+                xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4) {
+                    if (this.status == 200) {
+                      elmnt.innerHTML = this.responseText;
+                      /* move stylesheet links to head */
+                      var links = $("body").find("link").clone(); 
+                      $("body").find("link").remove();
+                      $("head").append(links);
+                      /* force justify for all paragraphs */
+                      $('#embeded').find('p').css("text-align", "justify");
+                      /* scroll to anchor after 2 seconds because yes*/
+                      setTimeout(function() {
+                        var anchor = window.location.hash;
+                        if (anchor) {
+                          var element = document.getElementById(anchor.substring(1));
+                          console.log(element);
+                          element.scrollIntoView();
+                        }
+                      }, 2000)
+                    }
+                    if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
+                    /* Remove the attribute, and call this function once more: */
+                    elmnt.removeAttribute("w3-include-html");
+                    includeHTML();
+                  }
+                }
+                xhttp.open("GET", file, true);
+                xhttp.send();
+                /* Exit the function: */
+                return;
+              }
+            }
+          }
+      </script> 
+      <div class="container">
+        <div class="row">
+          <div class="s12 m11" style="max-width: 19cm;">
+            <h5>{{ num + 1 }}/{{ total }}</h5>
+            <div class="divider"></div>
+            <div class="section" w3-include-html="{{ contentUrl }}?raw_html=yes" id="embeded" ></div>
+            <script>
+                includeHTML();
+            </script>
+            <div class="fixed-action-btn">
+                {% if link %}
+                <a class="btn-floating teal" onclick="history.go(-1)">
+                  <i class="material-icons">arrow_back</i>
+                </a>
+                {% endif %}
+                {% if prev + 1 %}
+                <a class="btn-floating green" href="/{{prev}}">
+                    <i class="material-icons">navigate_before</i>
+                </a>
+                {% endif %}
+                {% if next %}
+                <a class="btn-floating btn-large red" href="/{{next}}">
+                    <i class="large material-icons">navigate_next</i>
+                </a>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 5cm;"></div>
+      </div>
+      <script>
+        function getScrollPercent() {
+          var pos = $(window).scrollTop();
+          var max = $(document).height();
+          return pos / max;
+        }
+        window.onscroll = function() {scrollHandle()};
+        var oldScrollpos = 0;
+        function scrollHandle() {
+          var scroll = getScrollPercent() * 1000;
+          if (Math.abs(scroll - oldScrollpos) > 1) {
+            oldScrollpos = Math.trunc(scroll);
+            console.log(oldScrollpos);
+          }
+
+        }
+      </script>
+    </body>
+</html>
