@@ -9,7 +9,7 @@
         <script src="{{ url_for('static', filename='jquery.js') }}"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body onscroll="scrollHandle" class="orange lighten-3">
+    <body onscroll="scrollHandle" class="orange lighten-3" style="font-size: {{fontSize}};">
       <script>
         /* For app to close properly */
         document.addEventListener('DOMContentLoaded', function() {
@@ -19,7 +19,8 @@
             setInterval(function(){ fetch(url, { mode: 'no-cors'});}, 5000)();
         
         });
-        
+        /* Initialize materializecss */
+        M.AutoInit();
       </script>
       <script>
         /* Load and process content */
@@ -43,7 +44,7 @@
                       $("body").find("link").remove();
                       $("head").append(links);
                       /* force justify for all paragraphs */
-                      $('#embeded').find('p').css("text-align", "justify");
+                      $('#embeded').find('img').addClass("responsive-img");
                       /* scroll to anchor after 2 seconds because yes*/
                       setTimeout(function() {
                         var anchor = window.location.hash;
@@ -60,7 +61,7 @@
                         /*{% else %} */
                         scrollHandle();
                         /*{% endif %}*/
-                      }, 2000)
+                      }, 2000);
                     }
                     if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
                     /* Remove the attribute, and call this function once more: */
@@ -94,7 +95,7 @@
               return response.json();
             })
             .then(function (myJson) {
-              console.log(myJson.pos);
+              /*console.log(myJson.pos);*/
             })
             .catch(function (error) {
               console.log("Error: " + error);
@@ -103,9 +104,18 @@
         }
       </script>
       <div class="container">
-        <div class="row">
-          <div class="s12 m11 card-panel orange lighten-4" style="max-width: 19cm;">
-            <h5>{{ num + 1 }}/{{ total }}</h5>
+        <div>
+          <div class="card-panel orange lighten-4" style="max-width: 25cm;">
+            <h5>
+              <div class="row">
+                <div class="col s6">
+                  <span>{{ num + 1 }}/{{ total }}</span>
+                </div>
+                <div class="col s6 right-align">
+                  {{ title }}
+                </div>
+              </div>
+            </h5>
             <div class="divider"></div>
             <div class="section" w3-include-html="{{ contentUrl }}?raw_html=yes" id="embeded" ></div>
             <script>

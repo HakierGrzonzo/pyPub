@@ -18,14 +18,9 @@ except FileNotFoundError as e:
     config = {
         'name': 'pyPub v.2',
         'books': {},
-        'lineLength': 78,
-        'keybinds': {
-            'h': 'prev',
-            'j': 'down',
-            'k': 'up',
-            'l': 'next'
-        }
+        'fontsize': '100%'
     }
+    
 book = Book(args.file)
 currentChapterNum = config['books'].get(book.get_title(), dict()).get('chapter', 0)
 
@@ -56,7 +51,18 @@ def index(num, link = None, startOnProgress = False):
         progress = config['books'].get(book.get_title(), dict()).get('progress', 0)
     else:
         progress = 0
-    return render_template('index.html', contentUrl = url, prev = prev, next = next_, num = num, total = len(book.content_spine_ids), link = link, progress = progress)
+    return render_template(
+        'index.html',
+        contentUrl = url, 
+        prev = prev, 
+        next = next_, 
+        num = num, 
+        total = len(book.content_spine_ids), 
+        link = link, 
+        progress = progress, 
+        title = book.get_title(), 
+        fontSize = config.get('fontsize', '100%')
+    )
 
 @app.route('/api/pushProgress/<int:progress>')
 def saveProgress(progress):
