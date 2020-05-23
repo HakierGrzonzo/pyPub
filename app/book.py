@@ -1,6 +1,5 @@
 import ebooklib, json
 from ebooklib import epub
-from bs4 import BeautifulSoup as Soup
 from pprint import pprint as pp
 
 class Book():
@@ -14,7 +13,6 @@ class Book():
         self.id_to_href = dict()
         for item in self.book.get_items():
             self.id_to_href[item.get_id()] = item.get_name()
-        pp(self.id_to_href)
     def is_valid_chapter(self, num):
         if num in range(len(self.content_spine_ids)):
             return True
