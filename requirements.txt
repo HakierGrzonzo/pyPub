@@ -1,4 +1,4 @@
 flaskwebgui==0.1.9
 Flask==1.1.1
 EbookLib==0.17.1
-Twisted==20.3.0
+Twisted==22.1.0
